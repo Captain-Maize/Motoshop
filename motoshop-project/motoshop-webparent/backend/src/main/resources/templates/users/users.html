@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<!-- xÃ i engine cá»§a thymeleaf -->
+
+<head
+	th:replace="fragments :: page_head('Users - Moto Shop Admin', 'none')" />
+<!-- láº¥y fragment page_head gÃ¡n vÃ o vá»‹ trÃ­ nÃ y -->
+
+<body>
+	<div class="container-fluid">
+		<div th:replace="navigation :: menu"></div>
+		<!-- láº¥y fragment navigation gÃ¡n vÃ o vá»‹ trÃ­ nÃ y -->
+
+		<div>
+			<h2>Manage Users</h2>
+			<a th:href="@{/users/new}"
+				class="fas fa-user-plus fa-2x icon-dark mr-2"></a>
+			<!-- táº¡o má»›i user -->
+			<a th:href="@{/users/export/csv}"
+				class="fas fa-file-csv fa-2x icon-dark mr-2"></a>
+			<!-- xuáº¥t file csv -->
+			<a th:href="@{/users/export/excel}"
+				class="fas fa-file-excel fa-2x icon-dark mr-2"></a>
+			<!-- xuáº¥t file excel -->
+			<a th:href="@{/users/export/pdf}"
+				class="fas fa-file-pdf fa-2x icon-dark"></a>
+			<!-- xuáº¥t file pdf -->
+		</div>
+
+		<div
+			th:replace="fragments :: search_form_and_message('/users/page/1')"></div>
+
+		<div class="full-details">
+			<table
+				class="table table-bordered table-striped table-hover table-responsive-xl">
+				<thead class="thead-dark">
+					<tr>
+						<th class="hideable-column">
+						<th
+							th:replace="fragments :: column_link('/users', 'id', 'User ID', 'tag')"></th>
+
+
+						<th>Photos</th>
+
+						<th class="hideable-column">
+						<th
+							th:replace="fragments :: column_link('/users', 'email', 'E-mail', 'tag')"></th>
+
+						<th
+							th:replace="fragments :: column_link('/users', 'firstName', 'First Name', 'none')"></th>
+
+						<th
+							th:replace="fragments :: column_link('/users', 'lastName', 'Last Name', 'none')"></th>
+
+						<th>Roles</th>
+
+						<th
+							th:replace="fragments :: column_link('/users', 'enabled', 'Enabled', 'none')"></th>
+
+						<th></th>
+					</tr>
+				</thead>
+
+				<tbody>
+					<tr th:each="user : ${listUsers}">
+						<!-- listUsers Ä‘Æ°á»£c truyá»�n tá»« model  -->
+						<td class="hideable-column">[[${user.id}]]</td>
+						<!-- hiá»ƒn thá»‹ giÃ¡ trá»‹ trÃªn html dÃ¹ng [[${user.id}]], lÆ°u Ã½: user.id = user.getId() -->
+						<td>
+							<div th:replace="fragments :: user_photos"></div>
+						</td>
+						<td class="hideable-column">[[${user.email}]]</td>
+						<td>[[${user.firstName}]]</td>
+						<td>[[${user.lastName}]]</td>
+						<td>[[${user.roles}]]</td>
+						<td>
+							<div
+								th:replace="fragments :: status(${user.enabled}, 'user', '/users/' + ${user.id})"></div>
+							<!-- láº¥y giÃ¡ trá»‹ cá»§a biáº¿n dÃ¹ng ${user.enabled} -->
+						</td>
+						<td>
+							<div
+								th:replace="fragments :: edit('user', '/users/edit/' + ${user.id})"></div>
+							&nbsp;&nbsp;
+							<div
+								th:replace="fragments :: delete('user', ${user.id}, '/users/delete/' + ${user.id}, true)"></div>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+
+		<div class="less-details">
+			<div th:each="user : ${listUsers}" class="row m-1">
+				<div class="col-4">
+					<div th:replace="fragments :: user_photos"></div>
+				</div>
+
+				<div class="col-8">
+					<div>[[${user.fullName}]]</div>
+
+					<div>[[${user.roles}]]</div>
+
+					<div class="mt-2">
+						<div
+							th:replace="fragments :: status(${user.enabled}, 'user', '/users/' + ${user.id})"></div>
+						&nbsp;
+						<div
+							th:replace="fragments :: edit('user', '/users/edit/' + ${user.id})"></div>
+						&nbsp;
+						<div
+							th:replace="fragments :: delete('user', ${user.id}, '/users/delete/' + ${user.id}, true)"></div>
+					</div>
+
+					<div>&nbsp;</div>
+				</div>
+			</div>
+		</div>
+
+		<div th:replace="fragments :: pagination('/users', 'users')"></div>
+
+		<div th:replace="modal_fragments :: confirm_modal"></div>
+
+		<div th:replace="fragments :: footer"></div>
+
+	</div>
+</body>
+
+<script th:src="@{/js/common_list.js}"></script>
+
+<script type="text/javascript">
+   moduleURL = "[[@{/users}]]"; //tÆ°Æ¡ng á»©ng vá»›i /ShoppingCartAdmin/users -->tá»± Ä‘á»™ng thÃªm context-path vÃ o trÆ°á»›c. LÆ°u Ã½ chá»‰ sá»­ dá»¥ng trong file hmtl, ko sá»­ dá»¥ng trong file js
+
+   $(document).ready(function () {//khi users.html Ä‘Æ°á»£c load lÃªn thÃ¬ nÃ³ sáº½ cháº¡y vÃ o phÆ°Æ¡ng thá»©c ready() nÃ y, ready() dÃ¹ng Ä‘á»ƒ khai bÃ¡o cÃ¡c sá»± kiá»‡n(event) cho cÃ¡c tháº»
+      $(".link-delete").on("click", function (e) {//$(".link-delete") láº¥y ra tháº» cÃ³ class lÃ  link-delete -->tháº» <a>, báº¯t sá»± kiá»‡n click cho tháº» <a> nÃ y
+         e.preventDefault();//ko cho href xáº£y ra -->ko gá»�i xuá»‘ng controller
+         showDeleteConfirmModal($(this), 'user');//$(this) chÃ­nh lÃ  tháº» hiá»‡n táº¡i, $(this) lÃ  1 Ä‘á»‘i tÆ°á»£ng JQuery -->cÃ³ thá»ƒ sá»­ dá»¥ng cÃ¡c phÆ°Æ¡ng thá»©c cá»§a JQuery
+      });
+   });
+</script>
+
+</html>
